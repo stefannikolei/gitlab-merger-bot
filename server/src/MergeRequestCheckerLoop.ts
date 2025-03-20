@@ -83,12 +83,46 @@ export class MergeRequestCheckerLoop {
 		}
 
 		console.log('[loop] Checking assigned merge requests');
-		const assignedMergeRequests = await this.gitlabApi.getAssignedOpenedMergeRequests();
+		let assignedMergeRequests = await this.gitlabApi.getAssignedOpenedMergeRequests();
+
 		const possibleToAcceptMergeRequests = assignedMergeRequests.map(
-			(mergeRequest: MergeRequest) =>
-				prepareMergeRequestForMerge(this.gitlabApi, this.user, this.worker, this.config, {
-					mergeRequest,
-				}),
+			(mergeRequest: MergeRequest) => {
+				if (this.config.APPROVAL_REQUIRED) {
+					console.log('[loop] Checking approval of merge requests');
+
+					this.gitlabApi
+						.getMergeRequestApprovals(mergeRequest.target_project_id, mergeRequest.iid)
+						.then((approvalState) => {
+							if (!approvalState.approved) {
+								console.log('[loop] MR is not approved ');
+							}
+							else{
+								prepareMergeRequestForMerge(
+									this.gitlabApi,
+									this.user,
+									this.worker,
+									this.config,
+									{
+										mergeRequest,
+									},
+								);
+							}
+						})
+						.catch((error) => {
+							console.error('Fehler beim Abrufen des Approval-Status:', error);
+						});
+				} else {
+					prepareMergeRequestForMerge(
+						this.gitlabApi,
+						this.user,
+						this.worker,
+						this.config,
+						{
+							mergeRequest,
+						},
+					);
+				}
+			},
 		);
 
 		await Promise.all(possibleToAcceptMergeRequests);

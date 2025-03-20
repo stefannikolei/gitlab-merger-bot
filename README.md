@@ -105,6 +105,7 @@ GITLAB_AUTH_TOKEN="<token>" yarn run start
 | `WEB_HOOK_TOKEN`               | ``                   | It'll enable experimental web hook support                                 |
 | `WEB_HOOK_HISTORY_SIZE`        | `100`                | It's useful just primarily for debugging purposes.                         |
 | `ENABLE_PERMISSION_VALIDATION` | `false`              | It'll enable experimental permission validation                            |
+| `APPROVAL_REQUIRED`            | `false`              | Checks for approval. Will allow only MRs which are approved                |
 
 ## Development
 

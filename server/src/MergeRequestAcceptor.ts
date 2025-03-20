@@ -175,20 +175,20 @@ export const acceptMergeRequest = async (
 		return 'done';
 	}
 
-	if (mergeRequestInfo.detailed_merge_status === DetailedMergeStatus.NotApproved) {
-		const approvals = await gitlabApi.getMergeRequestApprovals(
-			mergeRequestInfo.target_project_id,
-			mergeRequestInfo.iid,
-		);
-		const message = `The merge request is waiting for approvals. Required ${approvals.approvals_required}, but ${approvals.approvals_left} left.`;
-		console.log(`[MR][${mergeRequestInfo.iid}] merge failed: ${message}, assigning back`);
-		await Promise.all([
-			assignToAuthorAndResetLabels(gitlabApi, mergeRequestInfo, user),
-			sendNote(gitlabApi, mergeRequestInfo, message),
-		]);
+	// if (mergeRequestInfo.detailed_merge_status === DetailedMergeStatus.NotApproved) {
+	// 	const approvals = await gitlabApi.getMergeRequestApprovals(
+	// 		mergeRequestInfo.target_project_id,
+	// 		mergeRequestInfo.iid,
+	// 	);
+	// 	const message = `The merge request is waiting for approvals. Required ${approvals.approvals_required}, but ${approvals.approvals_left} left.`;
+	// 	console.log(`[MR][${mergeRequestInfo.iid}] merge failed: ${message}, assigning back`);
+	// 	await Promise.all([
+	// 		assignToAuthorAndResetLabels(gitlabApi, mergeRequestInfo, user),
+	// 		sendNote(gitlabApi, mergeRequestInfo, message),
+	// 	]);
 
-		return 'done';
-	}
+	// 	return 'done';
+	// }
 
 	if (
 		mergeRequestInfo.detailed_merge_status === DetailedMergeStatus.Checking ||

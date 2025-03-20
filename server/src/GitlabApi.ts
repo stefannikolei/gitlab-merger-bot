@@ -168,8 +168,9 @@ export interface MergeRequestInfo extends MergeRequest {
 }
 
 export interface MergeRequestApprovals {
-	approvals_required: number;
-	approvals_left: number;
+	user_has_approved: boolean;
+	user_can_approve: boolean;
+	approved: false;
 }
 
 interface Pipeline {
@@ -359,10 +360,16 @@ export class GitlabApi {
 		await this.validateResponseStatus(response);
 
 		const data = await response.json();
-		if (typeof data !== 'object' || data === null || !('id' in data) || data.id === undefined) {
+
+		if (typeof data !== 'object' || data === null) {
 			console.error('response', data);
 			throw new Error('Invalid response');
 		}
+
+		// if(idCheck && (!('id' in data) || data.id === undefined)){
+		// 	console.error('response', data);
+		// 	throw new Error('Invalid response id missing');
+		// }
 
 		return data;
 	}
